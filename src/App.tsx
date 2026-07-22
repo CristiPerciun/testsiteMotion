@@ -35,6 +35,7 @@ function RainLayer() {
       speed: number;
       drift: number;
       alpha: number;
+      depth: number;
     };
 
     const drops: Drop[] = [];
@@ -57,51 +58,64 @@ function RainLayer() {
 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.lineCap = 'round';
+      ctx.globalCompositeOperation = 'screen';
 
-      const count = Math.max(160, Math.floor((width * height) / 2600));
+      const count = Math.max(240, Math.floor((width * height) / 1800));
       drops.length = 0;
       for (let i = 0; i < count; i += 1) {
         drops.push({
           x: random(0, width),
           y: random(0, height),
-          length: random(12, 38),
-          speed: random(10, 20),
-          drift: random(-0.2, 0.45),
-          alpha: random(0.15, 0.5),
+          length: random(18, 46),
+          speed: random(12, 24),
+          drift: random(-0.35, 0.65),
+          alpha: random(0.18, 0.58),
+          depth: random(0.4, 1.1),
         });
       }
     };
 
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
-      ctx.globalCompositeOperation = 'screen';
 
       for (const drop of drops) {
-        const gradient = ctx.createLinearGradient(drop.x, drop.y, drop.x + drop.drift * 14, drop.y + drop.length);
+        const endX = drop.x + drop.drift * (14 + drop.depth * 18);
+        const endY = drop.y + drop.length;
+
+        const gradient = ctx.createLinearGradient(drop.x, drop.y, endX, endY);
         gradient.addColorStop(0, `rgba(220, 240, 255, ${drop.alpha})`);
-        gradient.addColorStop(1, 'rgba(160, 210, 255, 0)');
+        gradient.addColorStop(0.55, `rgba(180, 226, 255, ${drop.alpha * 0.5})`);
+        gradient.addColorStop(1, 'rgba(145, 200, 255, 0)');
 
         ctx.strokeStyle = gradient;
-        ctx.lineWidth = 1.05;
+        ctx.lineWidth = 0.9 + drop.depth * 1.6;
+        ctx.shadowBlur = 10 + drop.depth * 12;
+        ctx.shadowColor = `rgba(175, 223, 255, ${drop.alpha * 0.9})`;
         ctx.beginPath();
         ctx.moveTo(drop.x, drop.y);
-        ctx.lineTo(drop.x + drop.drift * 14, drop.y + drop.length);
+        ctx.lineTo(endX, endY);
         ctx.stroke();
 
+        ctx.fillStyle = `rgba(225, 245, 255, ${drop.alpha * 0.9})`;
+        ctx.beginPath();
+        ctx.arc(drop.x, drop.y, 0.7 + drop.depth * 0.7, 0, Math.PI * 2);
+        ctx.fill();
+
         drop.y += drop.speed;
-        drop.x += drop.drift;
+        drop.x += drop.drift * 0.5;
 
         if (drop.y > height + drop.length) {
           drop.y = -drop.length;
           drop.x = random(0, width);
-          drop.length = random(12, 38);
-          drop.speed = random(10, 20);
-          drop.drift = random(-0.2, 0.45);
-          drop.alpha = random(0.18, 0.5);
+          drop.length = random(18, 46);
+          drop.speed = random(12, 24);
+          drop.drift = random(-0.35, 0.65);
+          drop.alpha = random(0.18, 0.58);
+          drop.depth = random(0.4, 1.1);
         }
 
-        if (drop.x > width + 10) drop.x = -10;
-        if (drop.x < -10) drop.x = width + 10;
+        if (drop.x > width + 20) drop.x = -20;
+        if (drop.x < -20) drop.x = width + 20;
       }
 
       rafId = window.requestAnimationFrame(draw);
