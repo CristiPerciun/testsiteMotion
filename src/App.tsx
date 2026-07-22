@@ -81,7 +81,7 @@ function Nav() {
   const [open, setOpen] = useState(false);
   const links = [
     ['Filosofia', '#filosofia'],
-    ['Collezione', '#collezione'],
+    ['Potatura', '#potatura'],
     ['Metodo', '#metodo'],
     ['Visite', '#visite'],
   ];
@@ -302,20 +302,91 @@ function App() {
           </div>
         </section>
 
-        <section id="collezione" className="bg-ink px-5 py-28 sm:px-8 sm:py-40 lg:px-14">
+        <section id="potatura" className="bg-ink px-5 py-28 sm:px-8 sm:py-40 lg:px-14">
           <div className="mx-auto max-w-[1500px]">
             <header data-reveal className="scroll-reveal flex flex-col gap-8 border-b border-white/15 pb-10 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.25em] text-moss">Collezione selezionata</p>
-                <h2 className="font-display text-6xl italic leading-none sm:text-8xl">Tre gesti,<br />tre caratteri.</h2>
+                <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.25em] text-moss">Potatura bonsai</p>
+                <h2 className="font-display text-6xl italic leading-none sm:text-8xl">Forma,<br />equilibrio,<br />tempo.</h2>
               </div>
-              <p className="max-w-sm text-sm leading-relaxed text-white/55">Inclina il cursore sulle forme. Ogni stile racconta una diversa risposta dell'albero alla gravità, al clima e al tempo.</p>
+              <p className="max-w-sm text-sm leading-relaxed text-white/55">La potatura è il gesto che trasforma un giovane esemplare in un’immagine coerente. Non si taglia per “ridurre”, ma per lasciare che la struttura naturale trovi il suo peso, il suo respiro e il suo ritmo.</p>
             </header>
 
             <div className="mt-10 grid gap-5 lg:grid-cols-3">
-              <TiltCard number="01 / 03" title="Moyogi" japanese="模様木" text="Equilibrio informale. Il tronco cambia direzione, ma l'apice torna sempre al centro." image={BASE_IMAGE} imagePosition="68% center" />
-              <TiltCard number="02 / 03" title="Shakan" japanese="斜幹" text="Il vento diventa postura. Una tensione obliqua, ferma e luminosa." image={REVEAL_IMAGE} imagePosition="52% center" />
-              <TiltCard number="03 / 03" title="Kengai" japanese="懸崖" text="La chioma scende oltre il vaso: una cascata scolpita dalla perseveranza." image={BASE_IMAGE} imagePosition="84% center" />
+              <article data-reveal className="scroll-reveal rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 sm:p-7">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-moss">01 · Formazione</p>
+                <h3 className="mt-4 font-display text-4xl italic text-white">La struttura iniziale</h3>
+                <p className="mt-4 text-sm leading-relaxed text-white/65">In primavera e inizio estate si lavora sugli apici e sui rami secondari per definire il profilo. Si rimuovono i germogli troppo vigorosi e si guarda alla direzione del tronco, non alla velocità del taglio.</p>
+                <ul className="mt-5 space-y-3 text-sm text-white/75">
+                  <li>• Si taglia sempre lasciando il ramo nella sua linea naturale.</li>
+                  <li>• Si preferiscono incisioni leggere e progressive.</li>
+                  <li>• L’obiettivo è creare equilibrio tra chioma e fogliazione.</li>
+                </ul>
+              </article>
+
+              <article data-reveal className="scroll-reveal rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 sm:p-7">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-moss">02 · Mantenimento</p>
+                <h3 className="mt-4 font-display text-4xl italic text-white">La potatura di regola</h3>
+                <p className="mt-4 text-sm leading-relaxed text-white/65">La potatura di mantenimento serve a contenere la crescita, uniformare il fogliame e mantenere l’idea stilistica. Sul bonsai una chioma troppo densa annulla il chiaroscuro del ramo e fa perdere il senso della scala.</p>
+                <ul className="mt-5 space-y-3 text-sm text-white/75">
+                  <li>• Si toccano soprattutto i nuovi getti più forti.</li>
+                  <li>• Si taglia a ridosso della foglia o del ramo che si vuole preservare.</li>
+                  <li>• La frequenza dipende dalla specie, dalla luce e dalla stagione.</li>
+                </ul>
+              </article>
+
+              <article data-reveal className="scroll-reveal rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 sm:p-7">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-moss">03 · Strumenti e cautela</p>
+                <h3 className="mt-4 font-display text-4xl italic text-white">Pulizia, precisione, pazienza</h3>
+                <p className="mt-4 text-sm leading-relaxed text-white/65">Per un bonsai la potatura non è un gesto aggressivo: è una scelta di composizione. Si usano forbici affilate, pinze leggere e una certa attenzione alla ferita che si lascia, perché ogni taglio incide sulla futura direzione dell’esemplare.</p>
+                <ul className="mt-5 space-y-3 text-sm text-white/75">
+                  <li>• Strumenti puliti evitano infezioni e deformazioni.</li>
+                  <li>• Non si taglia mai oltre il necessario.</li>
+                  <li>• Il tempo di ripresa è sempre più importante della velocità.</li>
+                </ul>
+              </article>
+            </div>
+
+            <div className="mt-10 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+              <article data-reveal className="scroll-reveal rounded-[1.5rem] border border-white/10 bg-[#11140f] p-6 sm:p-8">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-moss">Principi principali</p>
+                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-2xl bg-white/[0.03] p-4">
+                    <h4 className="font-medium text-white">1. Guardare prima di tagliare</h4>
+                    <p className="mt-2 text-sm leading-relaxed text-white/60">Il bonsai va letto come paesaggio. Ogni ramo porta una direzione e la potatura deve rispettarla.</p>
+                  </div>
+                  <div className="rounded-2xl bg-white/[0.03] p-4">
+                    <h4 className="font-medium text-white">2. Salvaguardare il flusso</h4>
+                    <p className="mt-2 text-sm leading-relaxed text-white/60">Lo scopo è mantenere il movimento e la leggerezza, non chiudere la chioma in un blocco uniforme.</p>
+                  </div>
+                  <div className="rounded-2xl bg-white/[0.03] p-4">
+                    <h4 className="font-medium text-white">3. Il rimedio è il tempo</h4>
+                    <p className="mt-2 text-sm leading-relaxed text-white/60">Una potatura precisa e ripetuta nel tempo crea una forma stabile e naturalmente equilibrata.</p>
+                  </div>
+                  <div className="rounded-2xl bg-white/[0.03] p-4">
+                    <h4 className="font-medium text-white">4. La specie fa la differenza</h4>
+                    <p className="mt-2 text-sm leading-relaxed text-white/60">Conifere, latifoglie e specie ad alto vigore non rispondono allo stesso modo alla stessa pressione di taglio.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article data-reveal className="scroll-reveal rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-moss">Quando si pota</p>
+                <div className="mt-5 space-y-4 text-sm leading-relaxed text-white/70">
+                  <div className="rounded-2xl bg-white/[0.03] p-4">
+                    <strong className="block text-white">Primavera:</strong>
+                    potatura di formazione e taglio dei rami più vigorosi.
+                  </div>
+                  <div className="rounded-2xl bg-white/[0.03] p-4">
+                    <strong className="block text-white">Estate:</strong>
+                    controllo della chioma e mantenimento della proporzione.
+                  </div>
+                  <div className="rounded-2xl bg-white/[0.03] p-4">
+                    <strong className="block text-white">Autunno:</strong>
+                    lavoro leggero, soprattutto su specie meno sensibili.
+                  </div>
+                </div>
+              </article>
             </div>
           </div>
         </section>
