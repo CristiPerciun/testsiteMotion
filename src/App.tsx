@@ -10,72 +10,28 @@ import {
   Sprout,
   X,
 } from 'lucide-react';
-import { RainLayer } from './RainLayer';
 
 const PUBLIC_BASE = import.meta.env.BASE_URL;
 const BASE_IMAGE = `${PUBLIC_BASE}assets/bonsai-night.png`;
 const REVEAL_IMAGE = `${PUBLIC_BASE}assets/bonsai-rain.png`;
-const SPOTLIGHT_R = 270;
+const HERO_VIDEO_WEBM = `${PUBLIC_BASE}assets/bonsai-rain-loop.webm`;
+const HERO_VIDEO_MP4 = `${PUBLIC_BASE}assets/bonsai-rain-loop.mp4`;
+const HERO_VIDEO_POSTER = `${PUBLIC_BASE}assets/bonsai-rain-poster.webp`;
 
-type Point = { x: number; y: number };
-
-function RevealLayer({ image, cursorX, cursorY }: { image: string; cursorX: number; cursorY: number }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const revealRef = useRef<HTMLDivElement>(null);
+function usePrefersReducedMotion() {
+  const [reducedMotion, setReducedMotion] = useState(() => (
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ));
 
   useEffect(() => {
-    const resizeCanvas = () => {
-      if (!canvasRef.current) return;
-      canvasRef.current.width = window.innerWidth;
-      canvasRef.current.height = window.innerHeight;
-    };
-
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    return () => window.removeEventListener('resize', resizeCanvas);
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updatePreference = () => setReducedMotion(media.matches);
+    updatePreference();
+    media.addEventListener('change', updatePreference);
+    return () => media.removeEventListener('change', updatePreference);
   }, []);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const reveal = revealRef.current;
-    if (!canvas || !reveal) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const radius = Math.min(SPOTLIGHT_R, Math.max(175, window.innerWidth * 0.2));
-    const gradient = ctx.createRadialGradient(cursorX, cursorY, 0, cursorX, cursorY, radius);
-    gradient.addColorStop(0, 'rgba(255,255,255,1)');
-    gradient.addColorStop(0.4, 'rgba(255,255,255,1)');
-    gradient.addColorStop(0.6, 'rgba(255,255,255,0.75)');
-    gradient.addColorStop(0.75, 'rgba(255,255,255,0.4)');
-    gradient.addColorStop(0.88, 'rgba(255,255,255,0.12)');
-    gradient.addColorStop(1, 'rgba(255,255,255,0)');
-
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(cursorX, cursorY, radius, 0, Math.PI * 2);
-    ctx.fill();
-
-    const mask = `url(${canvas.toDataURL()})`;
-    reveal.style.maskImage = mask;
-    reveal.style.webkitMaskImage = mask;
-    reveal.style.maskSize = '100% 100%';
-    reveal.style.webkitMaskSize = '100% 100%';
-  }, [cursorX, cursorY]);
-
-  return (
-    <>
-      <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 hidden" aria-hidden="true" />
-      <div
-        ref={revealRef}
-        className="reveal-image pointer-events-none absolute inset-0 z-30 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${image})` }}
-        aria-hidden="true"
-      />
-    </>
-  );
+  return reducedMotion;
 }
 
 function Nav() {
@@ -129,47 +85,49 @@ function Nav() {
 }
 
 function Hero() {
-  const mouse = useRef<Point>({ x: -999, y: -999 });
-  const smooth = useRef<Point>({ x: -999, y: -999 });
-  const rafRef = useRef<number>();
-  const [cursorPos, setCursorPos] = useState<Point>({ x: -999, y: -999 });
-
-  useEffect(() => {
-    const onPointerMove = (event: PointerEvent) => {
-      mouse.current = { x: event.clientX, y: event.clientY };
-      if (smooth.current.x < -900) smooth.current = { ...mouse.current };
-    };
-
-    const animate = () => {
-      smooth.current.x += (mouse.current.x - smooth.current.x) * 0.1;
-      smooth.current.y += (mouse.current.y - smooth.current.y) * 0.1;
-      setCursorPos({ ...smooth.current });
-      rafRef.current = requestAnimationFrame(animate);
-    };
-
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    rafRef.current = requestAnimationFrame(animate);
-    return () => {
-      window.removeEventListener('pointermove', onPointerMove);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
+  const reducedMotion = usePrefersReducedMotion();
 
   return (
     <section id="top" className="hero relative h-screen min-h-[680px] w-full overflow-hidden bg-black" style={{ height: '100dvh' }}>
-      <div className="hero-base hero-zoom absolute inset-0 z-10 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${BASE_IMAGE})` }} aria-hidden="true" />
+      <img
+        src={HERO_VIDEO_POSTER}
+        alt=""
+        aria-hidden="true"
+        fetchPriority="high"
+        decoding="async"
+        draggable={false}
+        className="hero-media absolute inset-0 z-10 h-full w-full object-cover"
+      />
+      {!reducedMotion && (
+        <video
+          className="hero-media absolute inset-0 z-10 h-full w-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={HERO_VIDEO_POSTER}
+          disablePictureInPicture
+          tabIndex={-1}
+          aria-hidden="true"
+        >
+          <source src={HERO_VIDEO_WEBM} type="video/webm" />
+          <source src={HERO_VIDEO_MP4} type="video/mp4" />
+        </video>
+      )}
       <div className="absolute inset-0 z-20 bg-black/20" aria-hidden="true" />
-      <RainLayer />
-      <RevealLayer image={REVEAL_IMAGE} cursorX={cursorPos.x} cursorY={cursorPos.y} />
       <div className="pointer-events-none absolute inset-0 z-40 bg-[linear-gradient(180deg,rgba(0,0,0,.42)_0%,transparent_28%,transparent_60%,rgba(0,0,0,.68)_100%)]" aria-hidden="true" />
 
       <div className="pointer-events-none absolute inset-x-0 top-[16%] z-50 flex flex-col items-center px-5 text-center sm:top-[14%]">
         <span className="hero-anim hero-fade mb-5 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.28em] text-white/65" style={{ animationDelay: '0.12s' }}>
           <span className="h-px w-8 bg-white/40" /> Atelier botanico · Italia <span className="h-px w-8 bg-white/40" />
         </span>
-        <h1 className="max-w-6xl text-white leading-[0.86]">
-          <span className="hero-anim hero-reveal font-display block text-[clamp(4.3rem,10vw,9.4rem)] font-normal italic tracking-[-0.07em]" style={{ animationDelay: '0.25s' }}>L'arte di</span>
-          <span className="hero-anim hero-reveal block text-[clamp(3.25rem,8.6vw,8rem)] font-light tracking-[-0.075em]" style={{ animationDelay: '0.42s' }}>fermare il tempo</span>
+        <h1 className="w-full max-w-6xl text-white leading-[0.86]">
+          <span className="hero-anim hero-reveal font-display block text-[clamp(3.1rem,13.5vw,4rem)] font-normal italic tracking-normal sm:text-[clamp(4.3rem,10vw,9.4rem)]" style={{ animationDelay: '0.25s' }}>L'arte di</span>
+          <span className="hero-anim hero-reveal block text-[clamp(2.5rem,11vw,3rem)] font-light tracking-normal sm:whitespace-nowrap sm:text-[clamp(3.25rem,8.6vw,8rem)]" style={{ animationDelay: '0.42s' }}>
+            <span className="block sm:inline">fermare</span>{' '}
+            <span className="block sm:inline">il tempo</span>
+          </span>
         </h1>
       </div>
 
@@ -177,17 +135,11 @@ function Hero() {
         <p className="hidden text-xs leading-relaxed text-white/70 sm:block">Ogni ramo custodisce una scelta. Ogni cicatrice, una stagione. Noi coltiviamo il tempo nella sua forma più essenziale.</p>
       </div>
 
-      <div className="hero-anim hero-fade absolute bottom-7 right-5 z-50 flex items-end gap-4 sm:bottom-10 sm:right-8" style={{ animationDelay: '0.9s' }}>
-        <div className="hidden text-right sm:block">
-          <p className="text-[10px] uppercase tracking-[0.22em] text-white/50">Muovi il cursore</p>
-          <p className="mt-1 text-xs text-white/80">Scopri la pioggia</p>
-        </div>
+      <div className="hero-anim hero-fade absolute bottom-7 right-5 z-50 sm:bottom-10 sm:right-8" style={{ animationDelay: '0.9s' }}>
         <a href="#filosofia" className="group grid h-14 w-14 place-items-center rounded-full border border-white/35 bg-white/10 text-white backdrop-blur-md transition hover:bg-white hover:text-ink" aria-label="Scorri verso il contenuto">
           <ArrowDown className="transition group-hover:translate-y-1" size={19} />
         </a>
       </div>
-
-      <div className="pointer-ring absolute z-[60] hidden h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/65 lg:block" style={{ left: cursorPos.x, top: cursorPos.y }} aria-hidden="true" />
     </section>
   );
 }

@@ -29,11 +29,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
   100% { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes heroZoom {
-  0% { transform: scale(1.12); }
-  100% { transform: scale(1); }
-}
-
 .hero-anim {
   opacity: 0;
   animation-fill-mode: forwards;
@@ -42,25 +37,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .hero-reveal { animation-name: heroReveal; animation-duration: 1.1s; }
 .hero-fade { animation-name: heroFadeUp; animation-duration: 1s; }
-.hero-zoom { animation: heroZoom 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
 .hero { isolation: isolate; }
 
-.hero-base,
-.reveal-image { background-position: 62% center; }
-
-.rain-layer {
-  background:
-    linear-gradient(180deg, rgba(120, 182, 218, 0.055), rgba(95, 151, 185, 0.018) 52%, transparent 78%),
-    radial-gradient(ellipse at 54% 5%, rgba(223, 240, 248, 0.08), transparent 43%);
-  opacity: .96;
-  mix-blend-mode: screen;
-}
-
-.pointer-ring {
-  transition: width 250ms ease, height 250ms ease, border-color 250ms ease;
-  mix-blend-mode: difference;
-}
+.hero-media { object-position: 62% 50%; }
 
 .progress-line { width: calc(var(--scroll-progress, 0) * 100%); }
 
@@ -149,8 +129,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 @media (max-width: 767px) {
-  .hero-base,
-  .reveal-image { background-position: 67% center; }
+  .hero-media { object-position: 67% 50%; }
   .method-photo { width: 100%; height: 56%; right: -24%; bottom: -3%; opacity: .42; }
   .method-orbit { width: 110vw; height: 110vw; left: 22%; top: 71%; }
   .method-section .sticky { align-items: flex-start; padding-top: 18vh; }
@@ -160,7 +139,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .hero-anim,
-  .hero-zoom,
   .scroll-reveal,
   .parallax-frame { animation: none; opacity: 1; transform: none; transition: none; }
   .parallax-image,
