@@ -11,8 +11,9 @@ import {
   X,
 } from 'lucide-react';
 
-const BASE_IMAGE = '/assets/bonsai-night.png';
-const REVEAL_IMAGE = '/assets/bonsai-rain.png';
+const PUBLIC_BASE = import.meta.env.BASE_URL;
+const BASE_IMAGE = `${PUBLIC_BASE}assets/bonsai-night.png`;
+const REVEAL_IMAGE = `${PUBLIC_BASE}assets/bonsai-rain.png`;
 const SPOTLIGHT_R = 270;
 
 type Point = { x: number; y: number };

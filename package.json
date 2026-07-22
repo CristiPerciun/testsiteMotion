@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit -p tsconfig.app.json && vite build && node scripts/prepare-sites.mjs",
+    "build": "tsc --noEmit -p tsconfig.app.json && vite build --base=/testsiteMotion/ && node scripts/prepare-sites.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
