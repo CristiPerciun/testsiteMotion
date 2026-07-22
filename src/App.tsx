@@ -18,6 +18,108 @@ const SPOTLIGHT_R = 270;
 
 type Point = { x: number; y: number };
 
+function RainLayer() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    type Drop = {
+      x: number;
+      y: number;
+      length: number;
+      speed: number;
+      drift: number;
+      alpha: number;
+    };
+
+    const drops: Drop[] = [];
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let rafId = 0;
+
+    const random = (min: number, max: number) => Math.random() * (max - min) + min;
+
+    const resize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.lineCap = 'round';
+
+      const count = Math.max(160, Math.floor((width * height) / 2600));
+      drops.length = 0;
+      for (let i = 0; i < count; i += 1) {
+        drops.push({
+          x: random(0, width),
+          y: random(0, height),
+          length: random(12, 38),
+          speed: random(10, 20),
+          drift: random(-0.2, 0.45),
+          alpha: random(0.15, 0.5),
+        });
+      }
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, width, height);
+      ctx.globalCompositeOperation = 'screen';
+
+      for (const drop of drops) {
+        const gradient = ctx.createLinearGradient(drop.x, drop.y, drop.x + drop.drift * 14, drop.y + drop.length);
+        gradient.addColorStop(0, `rgba(220, 240, 255, ${drop.alpha})`);
+        gradient.addColorStop(1, 'rgba(160, 210, 255, 0)');
+
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = 1.05;
+        ctx.beginPath();
+        ctx.moveTo(drop.x, drop.y);
+        ctx.lineTo(drop.x + drop.drift * 14, drop.y + drop.length);
+        ctx.stroke();
+
+        drop.y += drop.speed;
+        drop.x += drop.drift;
+
+        if (drop.y > height + drop.length) {
+          drop.y = -drop.length;
+          drop.x = random(0, width);
+          drop.length = random(12, 38);
+          drop.speed = random(10, 20);
+          drop.drift = random(-0.2, 0.45);
+          drop.alpha = random(0.18, 0.5);
+        }
+
+        if (drop.x > width + 10) drop.x = -10;
+        if (drop.x < -10) drop.x = width + 10;
+      }
+
+      rafId = window.requestAnimationFrame(draw);
+    };
+
+    resize();
+    draw();
+    window.addEventListener('resize', resize);
+
+    return () => {
+      window.removeEventListener('resize', resize);
+      window.cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="rain-layer pointer-events-none absolute inset-0 z-[24]" aria-hidden="true" />;
+}
+
 function RevealLayer({ image, cursorX, cursorY }: { image: string; cursorX: number; cursorY: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const revealRef = useRef<HTMLDivElement>(null);
@@ -158,6 +260,7 @@ function Hero() {
     <section id="top" className="hero relative h-screen min-h-[680px] w-full overflow-hidden bg-black" style={{ height: '100dvh' }}>
       <div className="hero-base hero-zoom absolute inset-0 z-10 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${BASE_IMAGE})` }} aria-hidden="true" />
       <div className="absolute inset-0 z-20 bg-black/20" aria-hidden="true" />
+      <RainLayer />
       <RevealLayer image={REVEAL_IMAGE} cursorX={cursorPos.x} cursorY={cursorPos.y} />
       <div className="pointer-events-none absolute inset-0 z-40 bg-[linear-gradient(180deg,rgba(0,0,0,.42)_0%,transparent_28%,transparent_60%,rgba(0,0,0,.68)_100%)]" aria-hidden="true" />
 

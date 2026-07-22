@@ -47,6 +47,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .hero-base,
 .reveal-image { background-position: 62% center; }
 
+.rain-layer {
+  background: linear-gradient(180deg, rgba(160, 210, 255, 0.08), rgba(160, 210, 255, 0));
+  opacity: 0.96;
+  filter: drop-shadow(0 0 12px rgba(165, 220, 255, 0.16));
+  mix-blend-mode: screen;
+}
+
 .pointer-ring {
   transition: width 250ms ease, height 250ms ease, border-color 250ms ease;
   mix-blend-mode: difference;
