@@ -10,6 +10,7 @@ import {
   Sprout,
   X,
 } from 'lucide-react';
+import { RainLayer } from './RainLayer';
 
 const PUBLIC_BASE = import.meta.env.BASE_URL;
 const BASE_IMAGE = `${PUBLIC_BASE}assets/bonsai-night.png`;
@@ -17,122 +18,6 @@ const REVEAL_IMAGE = `${PUBLIC_BASE}assets/bonsai-rain.png`;
 const SPOTLIGHT_R = 270;
 
 type Point = { x: number; y: number };
-
-function RainLayer() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    type Drop = {
-      x: number;
-      y: number;
-      length: number;
-      speed: number;
-      drift: number;
-      alpha: number;
-      depth: number;
-    };
-
-    const drops: Drop[] = [];
-    let width = 0;
-    let height = 0;
-    let dpr = 1;
-    let rafId = 0;
-
-    const random = (min: number, max: number) => Math.random() * (max - min) + min;
-
-    const resize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.lineCap = 'round';
-      ctx.globalCompositeOperation = 'screen';
-
-      const count = Math.max(240, Math.floor((width * height) / 1800));
-      drops.length = 0;
-      for (let i = 0; i < count; i += 1) {
-        drops.push({
-          x: random(0, width),
-          y: random(0, height),
-          length: random(18, 46),
-          speed: random(12, 24),
-          drift: random(-0.35, 0.65),
-          alpha: random(0.18, 0.58),
-          depth: random(0.4, 1.1),
-        });
-      }
-    };
-
-    const draw = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      for (const drop of drops) {
-        const endX = drop.x + drop.drift * (14 + drop.depth * 18);
-        const endY = drop.y + drop.length;
-
-        const gradient = ctx.createLinearGradient(drop.x, drop.y, endX, endY);
-        gradient.addColorStop(0, `rgba(220, 240, 255, ${drop.alpha})`);
-        gradient.addColorStop(0.55, `rgba(180, 226, 255, ${drop.alpha * 0.5})`);
-        gradient.addColorStop(1, 'rgba(145, 200, 255, 0)');
-
-        ctx.strokeStyle = gradient;
-        ctx.lineWidth = 0.9 + drop.depth * 1.6;
-        ctx.shadowBlur = 10 + drop.depth * 12;
-        ctx.shadowColor = `rgba(175, 223, 255, ${drop.alpha * 0.9})`;
-        ctx.beginPath();
-        ctx.moveTo(drop.x, drop.y);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
-
-        ctx.fillStyle = `rgba(225, 245, 255, ${drop.alpha * 0.9})`;
-        ctx.beginPath();
-        ctx.arc(drop.x, drop.y, 0.7 + drop.depth * 0.7, 0, Math.PI * 2);
-        ctx.fill();
-
-        drop.y += drop.speed;
-        drop.x += drop.drift * 0.5;
-
-        if (drop.y > height + drop.length) {
-          drop.y = -drop.length;
-          drop.x = random(0, width);
-          drop.length = random(18, 46);
-          drop.speed = random(12, 24);
-          drop.drift = random(-0.35, 0.65);
-          drop.alpha = random(0.18, 0.58);
-          drop.depth = random(0.4, 1.1);
-        }
-
-        if (drop.x > width + 20) drop.x = -20;
-        if (drop.x < -20) drop.x = width + 20;
-      }
-
-      rafId = window.requestAnimationFrame(draw);
-    };
-
-    resize();
-    draw();
-    window.addEventListener('resize', resize);
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      window.cancelAnimationFrame(rafId);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="rain-layer pointer-events-none absolute inset-0 z-[24]" aria-hidden="true" />;
-}
 
 function RevealLayer({ image, cursorX, cursorY }: { image: string; cursorX: number; cursorY: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
